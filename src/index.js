@@ -6,6 +6,120 @@ export default {
     }
 
     try {
+      // 国家代码映射表
+      const countryNameMap = {
+        // 亚洲
+        'CN': '中国',
+        'HK': '香港',
+        'MO': '澳门',
+        'TW': '台湾',
+        'JP': '日本',
+        'KR': '韩国',
+        'SG': '新加坡',
+        'MY': '马来西亚',
+        'TH': '泰国',
+        'VN': '越南',
+        'ID': '印度尼西亚',
+        'PH': '菲律宾',
+        'IN': '印度',
+        'PK': '巴基斯坦',
+        'IR': '伊朗',
+        'IQ': '伊拉克',
+        'SA': '沙特阿拉伯',
+        'AE': '阿联酋',
+        'IL': '以色列',
+        'KH': '柬埔寨',
+        'LA': '老挝',
+        'MM': '缅甸',
+        'NP': '尼泊尔',
+        'BD': '孟加拉国',
+
+        // 欧洲
+        'GB': '英国',
+        'FR': '法国',
+        'DE': '德国',
+        'IT': '意大利',
+        'ES': '西班牙',
+        'PT': '葡萄牙',
+        'RU': '俄罗斯',
+        'NL': '荷兰',
+        'BE': '比利时',
+        'SE': '瑞典',
+        'NO': '挪威',
+        'DK': '丹麦',
+        'FI': '芬兰',
+        'PL': '波兰',
+        'UA': '乌克兰',
+        'GR': '希腊',
+        'CH': '瑞士',
+        'AT': '奥地利',
+        'IE': '爱尔兰',
+        'IS': '冰岛',
+        'LU': '卢森堡',
+        'RO': '罗马尼亚',
+        'BG': '保加利亚',
+        'HR': '克罗地亚',
+        'CZ': '捷克',
+        'HU': '匈牙利',
+        'SK': '斯洛伐克',
+
+        // 北美洲
+        'US': '美国',
+        'CA': '加拿大',
+        'MX': '墨西哥',
+        'CU': '古巴',
+        'PA': '巴拿马',
+        'CR': '哥斯达黎加',
+
+        // 南美洲
+        'BR': '巴西',
+        'AR': '阿根廷',
+        'CL': '智利',
+        'CO': '哥伦比亚',
+        'PE': '秘鲁',
+        'VE': '委内瑞拉',
+        'UY': '乌拉圭',
+        'PY': '巴拉圭',
+        'BO': '玻利维亚',
+        'EC': '厄瓜多尔',
+
+        // 大洋洲
+        'AU': '澳大利亚',
+        'NZ': '新西兰',
+        'FJ': '斐济',
+        'PG': '巴布亚新几内亚',
+
+        // 非洲
+        'ZA': '南非',
+        'EG': '埃及',
+        'MA': '摩洛哥',
+        'NG': '尼日利亚',
+        'KE': '肯尼亚',
+        'ET': '埃塞俄比亚',
+        'TN': '突尼斯',
+        'GH': '加纳',
+        'DZ': '阿尔及利亚',
+        'SD': '苏丹',
+
+        // 其他地区
+        'AQ': '南极洲',
+        'VA': '梵蒂冈',
+        'MC': '摩纳哥',
+        'LI': '列支敦士登',
+        'AD': '安道尔',
+        'SM': '圣马力诺',
+        'MT': '马耳他',
+        'BN': '文莱',
+        'MV': '马尔代夫',
+        'BH': '巴林',
+        'QA': '卡塔尔',
+        'KW': '科威特',
+        'OM': '阿曼',
+        'JO': '约旦',
+        'LB': '黎巴嫩',
+        'SY': '叙利亚'
+      }
+
       // 获取所有可能的 IP 头部
       const headers = {
         'cf-connecting-ip': request.headers.get('cf-connecting-ip'),
@@ -84,6 +198,7 @@ export default {
       // 获取 CF 信息
       const cf = request.cf || {}
       const country = cf.country || ipApiData.country || ipInfoData.country || '-'
+      const countryName = countryNameMap[country] || country
       const region = cf.region || ipApiData.regionName || ipInfoData.region || '-'
       const city = cf.city || ipApiData.city || ipInfoData.city || '-'
       const asn = cf.asn || (ipApiData.as ? ipApiData.as.replace(/^AS/, '') : '') || ipInfoData.org || '-'
@@ -95,25 +210,25 @@ export default {
           ip: ipv4 || '-',
           ipv6: ipv6 || '-',
           provider: ipApiData.isp || '-',
-          location: `${ipApiData.country} ${ipApiData.regionName} ${ipApiData.city}`
+          location: `${countryNameMap[ipApiData.country] || ipApiData.country || '-'} ${ipApiData.regionName || '-'} ${ipApiData.city || '-'} | ${ipApiData.country || '-'} ${ipApiData.regionName || '-'} ${ipApiData.city || '-'}`
         },
         'IPInfo': {
           ip: ipv4 || '-',
           ipv6: ipv6 || '-',
           provider: ipInfoData.org || '-',
-          location: `${ipInfoData.country} ${ipInfoData.region} ${ipInfoData.city}`
+          location: `${countryNameMap[ipInfoData.country] || ipInfoData.country || '-'} ${ipInfoData.region || '-'} ${ipInfoData.city || '-'} | ${ipInfoData.country || '-'} ${ipInfoData.region || '-'} ${ipInfoData.city || '-'}`
         },
         'Cloudflare': {
           ip: ipv4 || '-',
           ipv6: ipv6 || '-',
           provider: asOrganization,
-          location: `${country} ${region} ${city}`
+          location: `${countryName} ${region} ${city} | ${country} ${region} ${city}`
         },
         'ASN信息': {
           ip: ipv4 || '-',
           ipv6: ipv6 || '-',
           provider: `AS${asn} ${asOrganization}`,
-          location: `${country} ${city}`
+          location: `${countryName} ${city} | ${country} ${city}`
         }
       }
 
@@ -121,7 +236,7 @@ export default {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>IP 查询</title>
+          <title>IP 查询 | IP Query</title>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -345,11 +460,16 @@ export default {
           <div class="container">
             <div class="header">
               <div class="logo">IP<span>HUB</span></div>
-              <div class="ip">IPv4: <span>${ipv4 || '未检测到'}</span></div>
-              <div class="ip">IPv6: <span>${ipv6 || '未检测到'}</span></div>
-              <div class="subtitle">您的 IP 地址</div>
-              <div class="subtitle">ISP: ${asOrganization}</div>
-              <button onclick="location.reload()" class="button">刷新数据</button>
+              <div class="ip">IPv4: <span>${ipv4 || '未检测到 | Not Detected'}</span></div>
+              <div class="ip">IPv6: <span>${ipv6 || '未检测到 | Not Detected'}</span></div>
+              <div class="subtitle">您的 IP 地址 | Your IP Address</div>
+              <div class="subtitle">ISP | 运营商: ${asOrganization}</div>
+              <div class="subtitle">
+                位置 | Location: ${countryName} ${region} ${city} | ${country} ${region} ${city}<br>
+                经纬度 | Coordinates: ${cf.latitude || '-'}, ${cf.longitude || '-'}<br>
+                时区 | Timezone: ${cf.timezone || '-'}
+              </div>
+              <button onclick="location.reload()" class="button">刷新数据 | Refresh</button>
             </div>
             
             <div class="info-card">
@@ -380,7 +500,7 @@ export default {
       })
     } catch (error) {
       console.error('Error fetching IP data:', error)
-      return new Response('Error fetching IP data', { status: 500 })
+      return new Response('Error fetching IP data | 获取 IP 数据时出错', { status: 500 })
     }
   }
 }
